@@ -1,23 +1,29 @@
 package backend.academy;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.file.*;
-import java.time.LocalDateTime;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
-import java.util.logging.Logger;
 
 public class LogParser {
 
     private static final Pattern LOG_PATTERN = Pattern.compile(
-        "^(\\S+)\\s(\\S+)\\s\\[(.*?)\\]\\s\"(.*?)\"\\s(\\d{3})\\s(\\d+)\\s\"(.*?)\"\\s\"(.*?)\"$"
+        "^(\\S+)\\s(\\S+)\\s\\S+\\s\\[(.+?)\\]\\s\"(.+?)\"\\s(\\d{3})\\s(\\d+|-)\\s\"(.*?)\"\\s\"(.*?)\"$"
     );
 
-    private static final Logger logger = Logger.getLogger(LogParser.class.getName());
-    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MMM/yyyy:HH:mm:ss");
+    DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MMM/yyyy:HH:mm:ss Z", Locale.ENGLISH);
+
 
     // Метод для парсинга строки лога
     public LogRecord parseLine(String logLine) {
@@ -26,14 +32,23 @@ public class LogParser {
         if (matcher.find()) {
             String remoteAddr = matcher.group(1);
             String remoteUser = matcher.group(2);
-            LocalDateTime timeLocal = LocalDateTime.parse(matcher.group(3), TIME_FORMATTER);
+            String timeZonedStr = matcher.group(3);
             String request = matcher.group(4);
             int status = Integer.parseInt(matcher.group(5));
-            int bodyBytesSent = Integer.parseInt(matcher.group(6));
+            int bodyBytesSent = matcher.group(6).equals("-") ? 0 : Integer.parseInt(matcher.group(6));
             String httpReferer = matcher.group(7);
             String httpUserAgent = matcher.group(8);
 
-            return new LogRecord(remoteAddr, remoteUser, timeLocal, request, status, bodyBytesSent, httpReferer, httpUserAgent);
+            try {
+                // Используем ZonedDateTime для корректной обработки временной зоны
+                ZonedDateTime timeZoned = ZonedDateTime.parse(timeZonedStr, TIME_FORMATTER);
+                return new LogRecord(remoteAddr, remoteUser, timeZoned, request, status, bodyBytesSent,
+                    httpReferer, httpUserAgent);
+            } catch (DateTimeParseException e) {
+                System.err.println("Ошибка при разборе даты: " + timeZonedStr);
+                e.printStackTrace();
+                return null;
+            }
         }
         return null;
     }
@@ -62,11 +77,21 @@ public class LogParser {
     // Метод для загрузки логов из URL
     private Stream<LogRecord> loadLogsFromUrl(String urlPath) throws IOException {
         System.out.println("Opening URL: " + urlPath); // Вывод для диагностики
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new URL(urlPath).openStream()))) {
-            return reader.lines()
+        URL obj = new URL(urlPath);
+        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+        con.setRequestMethod("GET");
+        int responseCode = con.getResponseCode();
+        System.out.println("GET Response Code :: " + responseCode);
+        if (responseCode == HttpURLConnection.HTTP_OK) { // success
+            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+            return in.lines()
                 .map(this::parseLine)
                 .filter(record -> record != null);
+
+        } else {
+            System.out.println("GET request did not work.");
         }
+        return null;
     }
 
     // Метод для загрузки логов из файла

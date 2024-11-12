@@ -1,12 +1,16 @@
 package backend.academy;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import lombok.Getter;
+import lombok.Setter;
 
-public class LogRecord {
+@Setter @Getter public class LogRecord {
 
-    private String remoteAddr;       // IP-адрес клиента
+    // Геттеры и сеттеры
+    // Геттеры и сеттеры
+    private String remoteAddress;       // IP-адрес клиента
     private String remoteUser;       // Имя пользователя
-    private LocalDateTime timeLocal; // Время запроса
+    private ZonedDateTime timeZoned; // Время запроса
     private String request;          // Запрос (включая метод, URL, версию HTTP)
     private int status;              // Код ответа
     private int bodyBytesSent;       // Размер ответа
@@ -14,90 +18,25 @@ public class LogRecord {
     private String httpUserAgent;    // User-Agent клиента
 
     // Конструктор
-    public LogRecord(String remoteAddr, String remoteUser, LocalDateTime timeLocal,
+    public LogRecord(String remoteAddress, String remoteUser, ZonedDateTime timeZoned,
         String request, int status, int bodyBytesSent,
         String httpReferer, String httpUserAgent) {
-        this.remoteAddr = remoteAddr;
+        this.remoteAddress = remoteAddress;
         this.remoteUser = remoteUser;
-        this.timeLocal = timeLocal;
+        this.timeZoned = timeZoned;
         this.request = request;
         this.status = status;
         this.bodyBytesSent = bodyBytesSent;
         this.httpReferer = httpReferer;
-        this.httpUserAgent = httpUserAgent;
-    }
-
-    // Геттеры и сеттеры
-    public String getRemoteAddr() {
-        return remoteAddr;
-    }
-
-    public void setRemoteAddr(String remoteAddr) {
-        this.remoteAddr = remoteAddr;
-    }
-
-    public String getRemoteUser() {
-        return remoteUser;
-    }
-
-    public void setRemoteUser(String remoteUser) {
-        this.remoteUser = remoteUser;
-    }
-
-    public LocalDateTime getTimeLocal() {
-        return timeLocal;
-    }
-
-    public void setTimeLocal(LocalDateTime timeLocal) {
-        this.timeLocal = timeLocal;
-    }
-
-    public String getRequest() {
-        return request;
-    }
-
-    public void setRequest(String request) {
-        this.request = request;
-    }
-
-    public int getStatus() {
-        return status;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
-    }
-
-    public int getBodyBytesSent() {
-        return bodyBytesSent;
-    }
-
-    public void setBodyBytesSent(int bodyBytesSent) {
-        this.bodyBytesSent = bodyBytesSent;
-    }
-
-    public String getHttpReferer() {
-        return httpReferer;
-    }
-
-    public void setHttpReferer(String httpReferer) {
-        this.httpReferer = httpReferer;
-    }
-
-    public String getHttpUserAgent() {
-        return httpUserAgent;
-    }
-
-    public void setHttpUserAgent(String httpUserAgent) {
         this.httpUserAgent = httpUserAgent;
     }
 
     @Override
     public String toString() {
         return "LogRecord{" +
-            "remoteAddr='" + remoteAddr + '\'' +
+            "remoteAddress='" + remoteAddress + '\'' +
             ", remoteUser='" + remoteUser + '\'' +
-            ", timeLocal=" + timeLocal +
+            ", timeLocal=" + timeZoned +
             ", request='" + request + '\'' +
             ", status=" + status +
             ", bodyBytesSent=" + bodyBytesSent +

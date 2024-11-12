@@ -5,10 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import lombok.Getter;
 
 public class LogReport {
 
-    private int totalRequests; // Общее количество запросов
+    // Получить общее количество запросов
+    @Getter private int totalRequests; // Общее количество запросов
     private Map<String, Integer> resourceFrequency; // Частота запросов к ресурсам
     private Map<Integer, Integer> statusFrequency; // Частота кодов ответа
     private long totalBytesSent; // Общий размер ответа
@@ -29,28 +31,23 @@ public class LogReport {
         logCount++;
 
         // Добавляем в список для перцентиля
-        responseSizes.add(record.getBodyBytesSent());
+        responseSizes.add(record.bodyBytesSent());
 
         // Увеличиваем счетчик для ресурса
-        String resource = record.getRequest().split(" ")[1];
+        String resource = record.request().split(" ")[1];
         resourceFrequency.put(resource, resourceFrequency.getOrDefault(resource, 0) + 1);
 
         // Увеличиваем счетчик для кода ответа
-        int status = record.getStatus();
+        int status = record.status();
         statusFrequency.put(status, statusFrequency.getOrDefault(status, 0) + 1);
 
         // Увеличиваем общий объем ответов
-        totalBytesSent += record.getBodyBytesSent();
+        totalBytesSent += record.bodyBytesSent();
     }
 
     // Метод для получения среднего размера ответа
     public double getAverageBytesSent() {
         return logCount > 0 ? (double) totalBytesSent / logCount : 0;
-    }
-
-    // Получить общее количество запросов
-    public int getTotalRequests() {
-        return totalRequests;
     }
 
     // Получить наиболее часто запрашиваемые ресурсы
