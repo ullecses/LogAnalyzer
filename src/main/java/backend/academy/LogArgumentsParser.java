@@ -1,5 +1,7 @@
 package backend.academy;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -8,12 +10,12 @@ import lombok.Getter;
 
 @Getter public class LogArgumentsParser {
 
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static final DateTimeFormatter DATE_FORMATTER_LOCAL = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    private String path;
-    private ZonedDateTime from;
-    private ZonedDateTime to;
-    private String format;
+    private final String path;
+    private final ZonedDateTime from;
+    private final ZonedDateTime to;
+    private final String format;
 
     public LogArgumentsParser(String[] args) {
         Map<String, String> arguments = new HashMap<>();
@@ -28,7 +30,16 @@ import lombok.Getter;
     }
 
     private ZonedDateTime parseDate(String dateStr) {
-        return dateStr != null ? ZonedDateTime.parse(dateStr, DATE_FORMATTER) : null;
+        if (dateStr == null) {
+            return null;
+        }
+
+        // Парсинг строки как LocalDate
+        LocalDate localDate = LocalDate.parse(dateStr, DATE_FORMATTER_LOCAL);
+
+        // Преобразование LocalDate в ZonedDateTime с временной зоной по умолчанию (например, UTC)
+        return localDate.atStartOfDay(ZoneId.systemDefault());
+        //return dateStr != null ? ZonedDateTime.parse(dateStr, DATE_FORMATTER) : null;
     }
 
 }

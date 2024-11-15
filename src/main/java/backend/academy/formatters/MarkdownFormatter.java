@@ -1,5 +1,6 @@
-package backend.academy;
+package backend.academy.formatters;
 
+import backend.academy.LogReport;
 import java.time.ZonedDateTime;
 
 public class MarkdownFormatter implements ReportFormatter {
@@ -25,17 +26,9 @@ public class MarkdownFormatter implements ReportFormatter {
         sb.append("\n#### Коды ответа\n\n");
         sb.append("| Код | Имя | Количество |\n|:---:|:---:|-----------:|\n");
         report.getMostFrequentStatusCodes().forEach((status, count) ->
-            sb.append(String.format("| %d | %s | %d |\n", status, getHttpStatusName(status))
+            sb.append(String.format("| %d | %s | %d |\n", status, getHttpStatusName(status), count)
             ));
 
         return sb.toString();
-    }
-
-    private String getHttpStatusName(int status) {
-        switch (status) {
-            case 200: return "OK";
-            // остальные коды...
-            default: return "Unknown";
-        }
     }
 }

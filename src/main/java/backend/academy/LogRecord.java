@@ -7,7 +7,6 @@ import lombok.Setter;
 @Setter @Getter public class LogRecord {
 
     // Геттеры и сеттеры
-    // Геттеры и сеттеры
     private String remoteAddress;       // IP-адрес клиента
     private String remoteUser;       // Имя пользователя
     private ZonedDateTime timeZoned; // Время запроса
