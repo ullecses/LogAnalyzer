@@ -5,9 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Setter @Getter public class LogRecord {
-
     // Геттеры и сеттеры
-    private String remoteAddress;       // IP-адрес клиента
+    private String remoteAddress;    // IP-адрес клиента
     private String remoteUser;       // Имя пользователя
     private ZonedDateTime timeZoned; // Время запроса
     private String request;          // Запрос (включая метод, URL, версию HTTP)
@@ -32,16 +31,16 @@ import lombok.Setter;
 
     @Override
     public String toString() {
-        return "LogRecord{" +
-            "remoteAddress='" + remoteAddress + '\'' +
-            ", remoteUser='" + remoteUser + '\'' +
-            ", timeLocal=" + timeZoned +
-            ", request='" + request + '\'' +
-            ", status=" + status +
-            ", bodyBytesSent=" + bodyBytesSent +
-            ", httpReferer='" + httpReferer + '\'' +
-            ", httpUserAgent='" + httpUserAgent + '\'' +
-            '}';
+        return "LogRecord{"
+            + "remoteAddress='" + remoteAddress + '\''
+            + ", remoteUser='" + remoteUser + '\''
+            + ", timeLocal=" + timeZoned
+            + ", request='" + request + '\''
+            + ", status=" + status
+            + ", bodyBytesSent=" + bodyBytesSent
+            + ", httpReferer='" + httpReferer + '\''
+            + ", httpUserAgent='" + httpUserAgent + '\''
+            + '}';
     }
 }
 

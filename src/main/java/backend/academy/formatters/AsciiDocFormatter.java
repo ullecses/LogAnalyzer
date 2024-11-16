@@ -1,37 +1,32 @@
 package backend.academy.formatters;
 
-import backend.academy.LogReport;
-import java.time.ZonedDateTime;
-
-public class AsciiDocFormatter implements ReportFormatter {
+public class AsciiDocFormatter extends AbstractReportFormatter {
 
     @Override
-    public String format(LogReport report, String path, ZonedDateTime from, ZonedDateTime to) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("== Общая информация\n\n");
-        sb.append("|===\n| Метрика | Значение\n");
-        sb.append(String.format("| Файл(-ы) | `%s`\n", path));
-        sb.append(String.format("| Начальная дата | %s\n", from != null ? from : "-"));
-        sb.append(String.format("| Конечная дата | %s\n", to != null ? to : "-"));
-        sb.append(String.format("| Количество запросов | %d\n", report.totalRequests()));
-        sb.append(String.format("| Средний размер ответа | %.2fb\n", report.getAverageBytesSent()));
-        sb.append(String.format("| 95p размера ответа | %db\n", report.get95thPercentile()));
-        sb.append("|===\n\n");
+    protected String formatHeader(String header) {
+        return String.format("== %s\n\n", header);
+    }
 
-        sb.append("== Запрашиваемые ресурсы\n\n");
-        sb.append("|===\n| Ресурс | Количество\n");
-        report.getMostFrequentResources().forEach((resource, count) ->
-            sb.append(String.format("| %s | %d\n", resource, count))
-        );
-        sb.append("|===\n\n");
+    @Override
+    protected String formatTableStart(String tableHeader) {
+        StringBuilder sb = new StringBuilder("|===\n");
+        String[] headers = tableHeader.split(" \\| ");
 
-        sb.append("== Коды ответа\n\n");
-        sb.append("|===\n| Код | Имя | Количество\n");
-        report.getMostFrequentStatusCodes().forEach((status, count) ->
-            sb.append(String.format("| %d | %s | %d\n", status, getHttpStatusName(status), count))
-        );
-        sb.append("|===\n");
-
+        for (String header : headers) {
+            sb.append("| ").append(header).append(" ");
+        }
+        sb.append("\n");
         return sb.toString();
     }
+
+    @Override
+    protected String formatTableRow(String... columns) {
+        return "| " + String.join(" | ", columns) + "\n";
+    }
+
+    @Override
+    protected String formatTableEnd() {
+        return "|===\n\n";
+    }
 }
+

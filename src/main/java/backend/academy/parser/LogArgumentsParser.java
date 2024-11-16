@@ -1,4 +1,4 @@
-package backend.academy;
+package backend.academy.parser;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -37,9 +37,8 @@ import lombok.Getter;
         // Парсинг строки как LocalDate
         LocalDate localDate = LocalDate.parse(dateStr, DATE_FORMATTER_LOCAL);
 
-        // Преобразование LocalDate в ZonedDateTime с временной зоной по умолчанию (например, UTC)
+        // Преобразование LocalDate в ZonedDateTime с временной зоной по умолчанию
         return localDate.atStartOfDay(ZoneId.systemDefault());
-        //return dateStr != null ? ZonedDateTime.parse(dateStr, DATE_FORMATTER) : null;
     }
 
 }
