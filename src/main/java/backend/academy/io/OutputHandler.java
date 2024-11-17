@@ -1,4 +1,4 @@
-package backend.academy;
+package backend.academy.io;
 
 import java.io.PrintStream;
 
@@ -11,9 +11,5 @@ public class OutputHandler {
 
     public void printLine(String message) {
         printStream.println(message);
-    }
-
-    public void print(String message) {
-        printStream.print(message);
     }
 }

@@ -1,4 +1,4 @@
-package backend.academy.parser;
+package backend.academy.parsers;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -16,17 +16,27 @@ import lombok.Getter;
     private final ZonedDateTime from;
     private final ZonedDateTime to;
     private final String format;
+    private final String filterField;
+    private final String filterValue;
 
     public LogArgumentsParser(String[] args) {
-        Map<String, String> arguments = new HashMap<>();
-        for (int i = 0; i < args.length; i += 2) {
-            arguments.put(args[i], args[i + 1]);
-        }
-
+        Map<String, String> arguments = parseArguments(args);
         path = arguments.get("--path");
         format = arguments.get("--format");
         from = parseDate(arguments.get("--from"));
         to = parseDate(arguments.get("--to"));
+        filterField = arguments.get("--filter-field");
+        filterValue = arguments.get("--filter-value");
+    }
+
+    private Map<String, String> parseArguments(String[] args) {
+        Map<String, String> arguments = new HashMap<>();
+        for (int i = 0; i < args.length; i += 2) {
+            if (i + 1 < args.length) {
+                arguments.put(args[i], args[i + 1]);
+            }
+        }
+        return arguments;
     }
 
     private ZonedDateTime parseDate(String dateStr) {
@@ -40,5 +50,4 @@ import lombok.Getter;
         // Преобразование LocalDate в ZonedDateTime с временной зоной по умолчанию
         return localDate.atStartOfDay(ZoneId.systemDefault());
     }
-
 }

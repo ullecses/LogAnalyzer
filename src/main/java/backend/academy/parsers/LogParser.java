@@ -1,7 +1,6 @@
-package backend.academy.parser;
+package backend.academy.parsers;
 
-import backend.academy.LogRecord;
-import lombok.Getter;
+import backend.academy.models.LogRecord;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -20,6 +19,7 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
+import lombok.Getter;
 
 public class LogParser {
 
@@ -27,7 +27,8 @@ public class LogParser {
         "^(\\S+)\\s(\\S+)\\s\\S+\\s\\[(.+?)\\]\\s\"(.+?)\"\\s(\\d{3})\\s(\\d+|-)\\s\"(.*?)\"\\s\"(.*?)\"$"
     );
 
-    static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MMM/yyyy:HH:mm:ss Z", Locale.ENGLISH);
+    static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MMM/yyyy:HH:mm:ss Z",
+        Locale.ENGLISH);
 
     // Метод для парсинга строки лога
     public LogRecord parseLine(String logLine) {
@@ -51,23 +52,23 @@ public class LogParser {
         }
 
         if (matcher.find()) {
-            String remoteAddr = matcher.group(LogGroup.REMOTE_ADDRESS.index());
-            String remoteUser = matcher.group(LogGroup.REMOTE_USER.index());
-            String timeZonedStr = matcher.group(LogGroup.TIME_ZONED.index());
-            String request = matcher.group(LogGroup.REQUEST.index());
-            int status = Integer.parseInt(matcher.group(LogGroup.STATUS.index()));
-            int bodyBytesSent = matcher.group(LogGroup.BODY_BYTES_SENT.index()).equals("-") ? 0
-                : Integer.parseInt(matcher.group(LogGroup.BODY_BYTES_SENT.index()));
-            String httpReferer = matcher.group(LogGroup.HTTP_REFERER.index());
-            String httpUserAgent = matcher.group(LogGroup.HTTP_USER_AGENT.index());
+            LogRecord logRecord = new LogRecord();
+            logRecord.remoteAddress(matcher.group(LogGroup.REMOTE_ADDRESS.index()));
+            logRecord.remoteUser(matcher.group(LogGroup.REMOTE_USER.index()));
+            logRecord.timeZonedStr(matcher.group(LogGroup.TIME_ZONED.index()));
+            logRecord.request(matcher.group(LogGroup.REQUEST.index()));
+            logRecord.status(Integer.parseInt(matcher.group(LogGroup.STATUS.index())));
+            logRecord.bodyBytesSent(matcher.group(LogGroup.BODY_BYTES_SENT.index()).equals("-") ? 0
+                : Integer.parseInt(matcher.group(LogGroup.BODY_BYTES_SENT.index())));
+            logRecord.httpReferer(matcher.group(LogGroup.HTTP_REFERER.index()));
+            logRecord.httpUserAgent(matcher.group(LogGroup.HTTP_USER_AGENT.index()));
 
             try {
                 // Используем ZonedDateTime для корректной обработки временной зоны
-                ZonedDateTime timeZoned = ZonedDateTime.parse(timeZonedStr, TIME_FORMATTER);
-                return new LogRecord(remoteAddr, remoteUser, timeZoned, request, status, bodyBytesSent,
-                    httpReferer, httpUserAgent);
+                logRecord.timeZoned(ZonedDateTime.parse(logRecord.timeZonedStr(), TIME_FORMATTER));
+                return logRecord;
             } catch (DateTimeParseException e) {
-                System.err.println("Ошибка при разборе даты: " + timeZonedStr);
+                System.err.println("Ошибка при разборе даты: " + logRecord.timeZonedStr());
                 return null;
             }
         }
@@ -87,7 +88,7 @@ public class LogParser {
         }
     }
 
-    private List<Path> findFiles(String wildcardPath) throws IOException {
+    public List<Path> findFiles(String wildcardPath) throws IOException {
         Path baseDir = Paths.get("").toAbsolutePath();
         PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + wildcardPath);
 
@@ -99,26 +100,27 @@ public class LogParser {
     }
 
     // Метод для загрузки логов из URL
-    private Stream<LogRecord> loadLogsFromUrl(String urlPath) throws IOException {
+    public Stream<LogRecord> loadLogsFromUrl(String urlPath) throws IOException {
         URL obj = new URL(urlPath);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
         con.setRequestMethod("GET");
         int responseCode = con.getResponseCode();
-        if (responseCode == HttpURLConnection.HTTP_OK) { // success
-            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-            return in.lines()
-                .map(this::parseLine)
-                .filter(logRecord -> logRecord != null);
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
+                return in.lines()
+                    .map(this::parseLine)
+                    .filter(logRecord -> logRecord != null);
+            }
         }
-        return null;
+        throw new IOException("Failed to fetch logs from URL. Response code: " + responseCode);
     }
 
     // Метод для загрузки логов из файла
-    private Stream<LogRecord> loadLogFile(Path file) {
+    public Stream<LogRecord> loadLogFile(Path file) {
         try {
             return Files.lines(file)
                 .map(this::parseLine) // Парсим каждую строку
-                .filter(logRecord -> logRecord != null); // Фильтруем валидные записи
+                .filter(logRecord -> logRecord != null);
         } catch (IOException e) {
             System.err.println("Ошибка чтения файла " + file + ": " + e.getMessage());
             return Stream.empty();

@@ -437,7 +437,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>backend.academy.analyzer.Main</mainClass>
+                            <mainClass>backend.academy.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -452,7 +452,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>backend.academy.analyzer.Main</mainClass>
+                            <mainClass>backend.academy.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

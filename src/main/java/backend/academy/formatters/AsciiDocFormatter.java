@@ -2,13 +2,11 @@ package backend.academy.formatters;
 
 public class AsciiDocFormatter extends AbstractReportFormatter {
 
-    @Override
-    protected String formatHeader(String header) {
+    @Override public String formatHeader(String header) {
         return String.format("== %s\n\n", header);
     }
 
-    @Override
-    protected String formatTableStart(String tableHeader) {
+    @Override public String formatTableStart(String tableHeader) {
         StringBuilder sb = new StringBuilder("|===\n");
         String[] headers = tableHeader.split(" \\| ");
 
@@ -19,13 +17,11 @@ public class AsciiDocFormatter extends AbstractReportFormatter {
         return sb.toString();
     }
 
-    @Override
-    protected String formatTableRow(String... columns) {
+    @Override public String formatTableRow(String... columns) {
         return "| " + String.join(" | ", columns) + "\n";
     }
 
-    @Override
-    protected String formatTableEnd() {
+    @Override public String formatTableEnd() {
         return "|===\n\n";
     }
 }

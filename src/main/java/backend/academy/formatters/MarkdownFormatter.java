@@ -2,32 +2,30 @@ package backend.academy.formatters;
 
 public class MarkdownFormatter extends AbstractReportFormatter {
 
-    @Override
-    protected String formatHeader(String header) {
+    private static final String PIPE = " | ";
+
+    @Override public String formatHeader(String header) {
         return String.format("#### %s\n\n", header);
     }
 
-    @Override
-    protected String formatTableStart(String tableHeader) {
+    @Override public String formatTableStart(String tableHeader) {
         String[] headers = tableHeader.split(" \\| ");
         StringBuilder sb = new StringBuilder("| ");
         StringBuilder align = new StringBuilder("|");
 
         for (String header : headers) {
-            sb.append(header).append(" | ");
+            sb.append(header).append(PIPE);
             align.append(":-------:|");
         }
 
         return sb + "\n" + align + "\n";
     }
 
-    @Override
-    protected String formatTableRow(String... columns) {
-        return "| " + String.join(" | ", columns) + " |\n";
+    @Override public String formatTableRow(String... columns) {
+        return "| " + String.join(PIPE, columns) + " |\n";
     }
 
-    @Override
-    protected String formatTableEnd() {
+    @Override public String formatTableEnd() {
         return "\n";
     }
 }

@@ -1,17 +1,19 @@
 package backend.academy.formatters;
 
-import backend.academy.LogReport;
+import backend.academy.analyzer.TotalLogInfo;
 import java.time.ZonedDateTime;
 import java.util.Map;
 
 public abstract class AbstractReportFormatter {
-    protected abstract String formatHeader(String header);
+    private static final String FORMAT_CONST = "`%s`";
 
-    protected abstract String formatTableStart(String tableHeader);
+    public abstract String formatHeader(String header);
 
-    protected abstract String formatTableRow(String... columns);
+    public abstract String formatTableStart(String tableHeader);
 
-    protected abstract String formatTableEnd();
+    public abstract String formatTableRow(String... columns);
+
+    public abstract String formatTableEnd();
 
     static final Map<Integer, String> HTTP_STATUS_NAMES = Map.ofEntries(
         Map.entry(200, "OK"),
@@ -29,36 +31,24 @@ public abstract class AbstractReportFormatter {
         Map.entry(504, "Gateway Timeout")
     );
 
-    /*Map<Integer, String> HTTP_STATUS_NAMES = Map.of(
-        200, "OK",
-        201, "Created",
-        400, "Bad Request",
-        401, "Unauthorized",
-        403, "Forbidden",
-        404, "Not Found",
-        500, "Internal Server Error",
-        502, "Bad Gateway",
-        503, "Service Unavailable"
-    );*/
-
     public String getHttpStatusName(int status) {
         return HTTP_STATUS_NAMES.getOrDefault(status, "Unknown");
     }
 
-    public String format(LogReport report, String path, ZonedDateTime from, ZonedDateTime to) {
+    public String format(TotalLogInfo report, String path, ZonedDateTime from, ZonedDateTime to) {
         StringBuilder sb = new StringBuilder();
 
         // Общая информация
         sb.append(formatHeader("Общая информация"));
         sb.append(formatTableStart("Метрика | Значение"));
-        sb.append(formatTableRow("Файл(-ы)", String.format("`%s`", path)));
+        sb.append(formatTableRow("Файл(-ы)", String.format(FORMAT_CONST, path)));
         sb.append(formatTableRow("Начальная дата", from != null ? from.toString() : "-"));
         sb.append(formatTableRow("Конечная дата", to != null ? to.toString() : "-"));
         sb.append(formatTableRow("Количество запросов", String.valueOf(report.totalRequests())));
         sb.append(formatTableRow("Средний размер ответа", String.format("%.2fb", report.getAverageBytesSent())));
         sb.append(formatTableRow("95p размера ответа", String.format("%db", report.get95thPercentile())));
         sb.append(formatTableRow("Уникальных IP-адресов", String.valueOf(report.getUniqueIpCount())));
-        sb.append(formatTableRow("Самый популярный метод", String.format("`%s`", report.getMostPopularMethod())));
+        sb.append(formatTableRow("Самый популярный метод", String.format(FORMAT_CONST, report.getMostPopularMethod())));
         sb.append(formatTableEnd());
 
         // Запрашиваемые ресурсы

@@ -1,5 +1,6 @@
-package backend.academy;
+package backend.academy.analyzer;
 
+import backend.academy.models.LogRecord;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,7 +10,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.Getter;
 
-public class LogReport {
+public class TotalLogInfo {
 
     private static final double PERCENTILE_95 = 0.95;
 
@@ -23,7 +24,7 @@ public class LogReport {
     private int logCount; // Количество записей для среднего размера ответа
     private List<Integer> responseSizes = new ArrayList<>();
 
-    public LogReport() {
+    public TotalLogInfo() {
         this.totalRequests = 0;
         this.resourceFrequency = new HashMap<>();
         this.statusFrequency = new HashMap<>();

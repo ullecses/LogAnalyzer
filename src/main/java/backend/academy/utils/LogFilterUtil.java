@@ -1,5 +1,6 @@
-package backend.academy;
+package backend.academy.utils;
 
+import backend.academy.models.LogRecord;
 import java.time.ZonedDateTime;
 import java.util.stream.Stream;
 
