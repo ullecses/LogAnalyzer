@@ -106,13 +106,12 @@ public class LogParser {
         con.setRequestMethod("GET");
         int responseCode = con.getResponseCode();
         if (responseCode == HttpURLConnection.HTTP_OK) {
-            try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
-                return in.lines()
-                    .map(this::parseLine)
-                    .filter(logRecord -> logRecord != null);
-            }
+            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+            return in.lines()
+                .map(this::parseLine)
+                .filter(logRecord -> logRecord != null);
         }
-        throw new IOException("Failed to fetch logs from URL. Response code: " + responseCode);
+        return null;
     }
 
     // Метод для загрузки логов из файла
