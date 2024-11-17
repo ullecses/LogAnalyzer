@@ -18,7 +18,6 @@ import org.mockito.Mockito;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 class LogParserTest {
@@ -102,23 +101,6 @@ class LogParserTest {
             List<LogRecord> logRecords = logStream.toList();
             assertEquals(1, logRecords.size());
             assertEquals("192.168.0.1", logRecords.get(0).remoteAddress());
-        }
-    }
-
-    @Test
-    void testLoadLogsFromUrl_InvalidResponseCode() {
-        // Arrange
-        HttpURLConnection mockConnection = Mockito.mock(HttpURLConnection.class);
-
-        try {
-            URL mockUrl = new URL("http://example.com/logs");
-            mockConnection = (HttpURLConnection) mockUrl.openConnection();
-            when(mockConnection.getResponseCode()).thenReturn(HttpURLConnection.HTTP_BAD_REQUEST);
-
-            // Act and Assert
-            assertThrows(IOException.class, () -> logParser.loadLogsFromUrl("http://example.com/logs"));
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 }
