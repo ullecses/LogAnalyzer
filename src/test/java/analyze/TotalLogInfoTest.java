@@ -1,8 +1,9 @@
+package analyze;
+
 import backend.academy.analyzer.TotalLogInfo;
 import backend.academy.models.LogRecord;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TotalLogInfoTest {
 

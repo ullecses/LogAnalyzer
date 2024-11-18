@@ -1,14 +1,14 @@
+package formatter;
+
 import backend.academy.analyzer.TotalLogInfo;
 import backend.academy.formatters.AbstractReportFormatter;
 import backend.academy.formatters.AsciiDocFormatter;
 import backend.academy.formatters.MarkdownFormatter;
 import backend.academy.utils.FileNameUtil;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import java.time.ZonedDateTime;
 import java.util.Map;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

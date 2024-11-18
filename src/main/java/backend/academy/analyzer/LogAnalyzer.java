@@ -31,6 +31,8 @@ public class LogAnalyzer {
         String path = parser.path();
         ZonedDateTime from = parser.from();
         ZonedDateTime to = parser.to();
+        String filterField = parser.filterField();
+        String filterValue = parser.filterValue();
 
         // Используем enum для определения формата
         FileNameUtil.FileFormat format = getFormatOrDefault(parser.format());
@@ -40,6 +42,11 @@ public class LogAnalyzer {
 
         // Фильтрация по временным параметрам
         logStream = LogFilterUtil.filterByDateRange(logStream, from, to);
+
+        // Фильтрация по полю и значению, если указаны
+        if (filterField != null && filterValue != null) {
+            logStream = LogFilterUtil.filterByField(logStream, filterField, filterValue);
+        }
 
         TotalLogInfo report = new TotalLogInfo();
         logStream.forEach(report::addLogRecord);
